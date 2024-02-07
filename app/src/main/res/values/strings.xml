@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">My Application</string>
+
+    <string-array name="animal_names">
+        <item>Dog</item>
+        <item>Duck</item>
+        <item>Broccoli</item>
+
+    </string-array>
+
+    <string-array name="description">
+        <item>Woof</item>
+        <item>Quack</item>
+        <item>Just a vegetable</item>
+
+    </string-array>
+</resources>
