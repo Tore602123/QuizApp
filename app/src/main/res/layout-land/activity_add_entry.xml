@@ -70,7 +70,7 @@
             android:layout_height="60dp"
             android:layout_gravity="center"
             android:layout_marginTop="20dp"
-            android:background="@drawable/custom_button_start"
+            android:background="@drawable/startbutton"
             android:text="add to database"
             android:textAllCaps="true"
             android:textSize="20sp"
