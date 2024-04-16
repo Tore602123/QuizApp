@@ -15,9 +15,9 @@ import com.example.myapplication.model.Animal;
  */
 public class AnimalRepository {
 
-    private MutableLiveData<List<Animal>> searchResults = new MutableLiveData<>();
-    private LiveData<List<Animal>> allAnimals;
-    private AnimalDAO animalDAO;
+    private final MutableLiveData<List<Animal>> searchResults = new MutableLiveData<>();
+    private final LiveData<List<Animal>> allAnimals;
+    private final AnimalDAO animalDAO;
 
     /**
      * Constructor that gets a database instance and initializes the DAO.
@@ -81,8 +81,8 @@ public class AnimalRepository {
      * AsyncTask for querying the database by name.
      */
     private static class QueryAsyncTask extends AsyncTask<String, Void, List<Animal>> {
-        private AnimalDAO asyncTaskDao;
-        private AnimalRepository delegate;
+        private final AnimalDAO asyncTaskDao;
+        private final AnimalRepository delegate;
 
         QueryAsyncTask(AnimalDAO dao, AnimalRepository delegate) {
             this.asyncTaskDao = dao;
@@ -104,7 +104,7 @@ public class AnimalRepository {
      * AsyncTask for inserting an animal into the database.
      */
     private static class InsertAsyncTask extends AsyncTask<Animal, Void, Void> {
-        private AnimalDAO asyncTaskDao;
+        private final AnimalDAO asyncTaskDao;
 
         InsertAsyncTask(AnimalDAO dao) {
             this.asyncTaskDao = dao;
@@ -121,7 +121,7 @@ public class AnimalRepository {
      * AsyncTask for deleting an animal from the database.
      */
     private static class DeleteAsyncTask extends AsyncTask<Animal, Void, Void> {
-        private AnimalDAO asyncTaskDao;
+        private final AnimalDAO asyncTaskDao;
 
         DeleteAsyncTask(AnimalDAO dao) {
             this.asyncTaskDao = dao;

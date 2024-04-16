@@ -1,4 +1,4 @@
-package com.example.myapplication.activites;
+package com.example.myapplication.activities;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -73,9 +73,9 @@ public class MainActivity extends AppCompatActivity {
      * Adds initial entries to the database if there are less than three animals.
      */
     public void addInitialEntries() {
-        insertAnimalEntry(R.drawable.cat, "Cat");
+        insertAnimalEntry(R.drawable.duck, "Duck");
         insertAnimalEntry(R.drawable.dog, "Dog");
-        insertAnimalEntry(R.drawable.anteater, "Anteater");
+        insertAnimalEntry(R.drawable.broccoli, "Broccoli");
     }
 
     /**

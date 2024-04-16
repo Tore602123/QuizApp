@@ -1,4 +1,4 @@
-package com.example.myapplication.activites;
+package com.example.myapplication.activities;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -67,7 +67,7 @@ public class AddEntryActivity extends AppCompatActivity {
      */
     private void setupListeners() {
         findViewById(R.id.gallery).setOnClickListener(view -> pickImageFromGallery());
-        nameInput.addTextChangedListener(new SimpleTextWatcher(s -> name = s.toString()));
+        nameInput.addTextChangedListener(new SimpleTextWatcher(s -> name = s));
         findViewById(R.id.addentrybtn).setOnClickListener(view -> addAnimalEntry());
     }
 
@@ -134,7 +134,7 @@ public class AddEntryActivity extends AppCompatActivity {
      * SimpleTextWatcher simplifies TextWatcher interface for afterTextChanged use.
      */
     private class SimpleTextWatcher implements TextWatcher {
-        private Consumer<String> afterChanged;
+        private final Consumer<String> afterChanged;
 
         SimpleTextWatcher(Consumer<String> afterChanged) {
             this.afterChanged = afterChanged;
