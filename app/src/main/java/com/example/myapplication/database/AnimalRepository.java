@@ -15,78 +15,56 @@ import com.example.myapplication.model.Animal;
  */
 public class AnimalRepository {
 
-    private final MutableLiveData<List<Animal>> searchResults = new MutableLiveData<>();
-    private final LiveData<List<Animal>> allAnimals;
-    private final AnimalDAO animalDAO;
+    private MutableLiveData<List<Animal>> searchResults =
+            new MutableLiveData<>();
+    private LiveData<List<Animal>> allAnimals;
+    private AnimalDAO animalDAO;
 
-    /**
-     * Constructor that gets a database instance and initializes the DAO.
-     * @param application The application context used to get the database.
-     */
+    public LiveData<List<Animal>> getAllAnimals() {
+        return allAnimals;
+    }
+
+    public MutableLiveData<List<Animal>> getSearchResults() {
+        return searchResults;
+    }
+
     public AnimalRepository(Application application) {
         AnimalRoomDatabase db = AnimalRoomDatabase.getDatabase(application);
         animalDAO = db.animalDAO();
         allAnimals = animalDAO.getAll();
     }
 
-    /**
-     * Retrieves all animals from the database.
-     * @return A LiveData list of all animals.
-     */
-    public LiveData<List<Animal>> getAllAnimals() {
-        return allAnimals;
-    }
-
-    /**
-     * Retrieves the results of a search query.
-     * @return A MutableLiveData list of animals matching search criteria.
-     */
-    public MutableLiveData<List<Animal>> getSearchResults() {
-        return searchResults;
-    }
-
-    /**
-     * Inserts an animal into the database asynchronously.
-     * @param animal The animal to be inserted.
-     */
     public void insertAnimal(Animal animal) {
-        new InsertAsyncTask(animalDAO).execute(animal);
+        InsertAsyncTask task = new InsertAsyncTask(animalDAO);
+        task.execute(animal);
     }
 
-    /**
-     * Deletes an animal from the database asynchronously.
-     * @param animal The animal to be deleted.
-     */
     public void deleteAnimal(Animal animal) {
-        new DeleteAsyncTask(animalDAO).execute(animal);
+        DeleteAsyncTask task = new DeleteAsyncTask(animalDAO);
+        task.execute(animal);
     }
 
-    /**
-     * Finds animals by name asynchronously and updates searchResults LiveData.
-     * @param name The name to search for.
-     */
     public void findAnimal(String name) {
-        new QueryAsyncTask(animalDAO, this).execute(name);
+        QueryAsyncTask task = new QueryAsyncTask(animalDAO);
+        task.delegate = this;
+        task.execute(name);
+    }
+    public int getAnimalCount() {
+        return animalDAO.countAnimals();
     }
 
-    /**
-     * Callback method to update search results after a query execution.
-     * @param results The list of animals found.
-     */
     private void asyncFinished(List<Animal> results) {
         searchResults.setValue(results);
     }
 
-    /**
-     * AsyncTask for querying the database by name.
-     */
-    private static class QueryAsyncTask extends AsyncTask<String, Void, List<Animal>> {
-        private final AnimalDAO asyncTaskDao;
-        private final AnimalRepository delegate;
+    private static class QueryAsyncTask extends
+            AsyncTask<String, Void, List<Animal>> {
 
-        QueryAsyncTask(AnimalDAO dao, AnimalRepository delegate) {
-            this.asyncTaskDao = dao;
-            this.delegate = delegate;
+        private AnimalDAO asyncTaskDao;
+        private AnimalRepository delegate = null;
+
+        QueryAsyncTask(AnimalDAO dao) {
+            asyncTaskDao = dao;
         }
 
         @Override
@@ -100,14 +78,12 @@ public class AnimalRepository {
         }
     }
 
-    /**
-     * AsyncTask for inserting an animal into the database.
-     */
     private static class InsertAsyncTask extends AsyncTask<Animal, Void, Void> {
-        private final AnimalDAO asyncTaskDao;
+
+        private AnimalDAO asyncTaskDao;
 
         InsertAsyncTask(AnimalDAO dao) {
-            this.asyncTaskDao = dao;
+            asyncTaskDao = dao;
         }
 
         @Override
@@ -117,14 +93,12 @@ public class AnimalRepository {
         }
     }
 
-    /**
-     * AsyncTask for deleting an animal from the database.
-     */
     private static class DeleteAsyncTask extends AsyncTask<Animal, Void, Void> {
-        private final AnimalDAO asyncTaskDao;
+
+        private AnimalDAO asyncTaskDao;
 
         DeleteAsyncTask(AnimalDAO dao) {
-            this.asyncTaskDao = dao;
+            asyncTaskDao = dao;
         }
 
         @Override

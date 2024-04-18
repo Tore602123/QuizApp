@@ -100,8 +100,19 @@ public class AddEntryActivity extends AppCompatActivity {
      * @return The byte array.
      */
     private byte[] bitmapToByteArray(Bitmap bitmap) {
+        // Calculate the scaling factor based on the desired width or height
+        int maxWidth = 800; // or whatever width you deem appropriate
+        int maxHeight = 800; // or whatever height you deem appropriate
+        float scale = Math.min(((float) maxWidth / bitmap.getWidth()), ((float) maxHeight / bitmap.getHeight()));
+
+        // Create a new scaled bitmap
+        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap,
+                (int) (bitmap.getWidth() * scale), (int) (bitmap.getHeight() * scale), true);
+
+        // Compress the scaled bitmap to a byte array
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream); // Compress quality set to 75
+
         return stream.toByteArray();
     }
 

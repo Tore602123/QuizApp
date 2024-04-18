@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -79,5 +80,8 @@ public class DatabaseActivity extends AppCompatActivity {
         List<Animal> reversedAnimals = animalAdapter.getAnimals();
         Collections.reverse(reversedAnimals);
         animalAdapter.setAnimals(reversedAnimals);
+    }
+    public LiveData<List<Animal>> getAll() {
+        return databaseViewModel.getAllAnimals();
     }
 }

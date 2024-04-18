@@ -1,7 +1,8 @@
 package com.example.myapplication.viewmodel;
 
 import android.app.Application;
-import android.widget.ProgressBar;
+import android.util.Log;
+
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -9,124 +10,118 @@ import androidx.lifecycle.LiveData;
 import com.example.myapplication.database.AnimalRepository;
 import com.example.myapplication.model.Animal;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Random;
 
-/**
- * ViewModel for managing quiz operations and data in the Quiz App.
- * This ViewModel tracks quiz progress, options, and results, and interfaces with the AnimalRepository for data operations.
- */
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.LifecycleOwner;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+
+import android.util.Log;
+
+import androidx.lifecycle.MutableLiveData;
+
 
 public class QuizViewModel extends AndroidViewModel {
+    private AnimalRepository repository;
+    private MutableLiveData<List<Animal>> allAnimals;
+    private MutableLiveData<Animal> currentAnimal;
+    private MutableLiveData<List<Animal>> options;
+    private MutableLiveData<Integer> score = new MutableLiveData<>(0);
 
-    private final AnimalRepository repository;
-    private final LiveData<List<Animal>> allAnimals;
-    private int correctnameplace;
-    private int index = -1;
-    private int counter;
-    private int countercorrect;
-    private String correctname;
-    private int progress = 0;
-    private int option1;
-    private int option2;
-    private ProgressBar progressBar;
-
-    public ProgressBar getProgressBar() {
-        return progressBar;
-    }
-
-    public void setProgressBar(ProgressBar progressBar) {
-        this.progressBar = progressBar;
-    }
-
-    public int getOption1() {
-        return option1;
-    }
-
-    public void setOption1(int option1) {
-        this.option1 = option1;
-    }
-
-    public int getOption2() {
-        return option2;
-    }
-
-    public void setOption2(int option2) {
-        this.option2 = option2;
-    }
-
-    public int getCorrectnameplace() {
-        return correctnameplace;
-    }
-
-    public void setCorrectnameplace(int correctnameplace) {
-        this.correctnameplace = correctnameplace;
-    }
-
-    public int getIndex() {
-        return index;
-    }
-
-    public void setIndex(int index) {
-        this.index = index;
-    }
-
-    public int getCounter() {
-        return counter;
-    }
-
-    public void setCounter(int counter) {
-        this.counter = counter;
-    }
-
-    public int getCountercorrect() {
-        return countercorrect;
-    }
-
-    public void setCountercorrect(int countercorrect) {
-        this.countercorrect = countercorrect;
-    }
-
-    public String getCorrectname() {
-        return correctname;
-    }
-
-    public void setCorrectname(String correctname) {
-        this.correctname = correctname;
-    }
-
-    public int getProgress() {
-        return progress;
-    }
-
-    public void setProgress(int progress) {
-        this.progress = progress;
-    }
 
     public QuizViewModel(Application application) {
         super(application);
         repository = new AnimalRepository(application);
-        allAnimals = repository.getAllAnimals();
-        counter=0;
-        countercorrect=0;
+        allAnimals = new MutableLiveData<>();
+        currentAnimal = new MutableLiveData<>();
+        options = new MutableLiveData<>();
+
+    }
+
+    public void initAnimals() {
+        repository.getAllAnimals().observeForever(animals -> {
+            if (animals != null && !animals.isEmpty()) {
+                // Remove duplicates based on animal name using a Set
+                List<Animal> uniqueAnimals = animals.stream()
+                        .collect(Collectors.collectingAndThen(
+                                Collectors.toMap(Animal::getName, Function.identity(), (existing, replacement) -> existing),
+                                map -> new ArrayList<>(map.values())
+                        ));
+                allAnimals.setValue(uniqueAnimals);
+                nextQuestion();  // Prepare the first question
+            }
+        });
+    }
+
+    public LiveData<List<Animal>> getOptions() {
+        return options;
+    }
+
+    public LiveData<Animal> getCurrentAnimal() {
+        return currentAnimal;
+    }
+
+    public void nextQuestion() {
+        List<Animal> currentList = allAnimals.getValue();
+        if (currentList != null && !currentList.isEmpty()) {
+            Collections.shuffle(currentList);
+            Animal questionAnimal = currentList.remove(0);
+            currentList.add(questionAnimal);  // Add it back to the end of the list
+            Log.d("QuizViewModel", "Current Question Animal: " + questionAnimal.getName());  // Log the current animal
+            currentAnimal.setValue(questionAnimal);  // Set the first animal as the current question
+            generateOptions(questionAnimal);  // Generate options for this animal
+            allAnimals.setValue(new ArrayList<>(currentList));  // Update LiveData with the modified list
+            Log.d("QuizViewModel", "All Animals before shuffle: " + currentList.stream().map(Animal::getName).collect(Collectors.joining(", ")));
+
+        } else {
+            Log.e("QuizViewModel", "No animals available for questions.");
+        }
+    }
+
+    private void generateOptions(Animal correctAnimal) {
+        List<Animal> currentList = new ArrayList<>(allAnimals.getValue());  // Clone the current list for manipulation
+        if (currentList != null && currentList.size() >= 3) {
+            currentList.remove(correctAnimal);  // Remove the correct animal
+            Collections.shuffle(currentList);  // Shuffle to randomize
+
+            List<Animal> choices = new ArrayList<>(currentList.subList(0, 2));  // Select two random animals
+            if (!choices.contains(correctAnimal)) {
+                choices.add(correctAnimal);  // Ensure the correct animal is added only if not already selected
+            } else {
+                // If the correct animal is somehow still in the choices, add another animal
+                choices.add(currentList.get(2)); // Safely assuming there's at least a third distinct animal
+            }
+            Collections.shuffle(choices);  // Shuffle again to mix the correct answer into the options
+
+            Log.d("QuizViewModel", "Options: " + choices.stream().map(Animal::getName).collect(Collectors.joining(", ")));  // Log the options
+            options.postValue(choices);  // Post the updated options
+        } else {
+            Log.e("QuizViewModel", "Not enough animals to generate quiz options.");
+        }
     }
 
 
-    public LiveData<List<Animal>> getAllAnimals() {
-        return allAnimals;
+    public void correctAnswer() {
+        if (score.getValue() != null) {
+            score.postValue(score.getValue() + 1);  // Increment the score
+        }
     }
 
-    public void insertAnimal(Animal animal) {
-        repository.insertAnimal(animal);
+    public LiveData<Integer> getScore() {
+        return score;
     }
 
-    public void findAnimal(String name) {
-        repository.findAnimal(name);
-    }
 
-    public void deleteAnimal(Animal animal) {
-        repository.deleteAnimal(animal);
+    public boolean checkAnswer(Animal selectedAnimal) {
+        Animal current = currentAnimal.getValue();
+        return current != null && selectedAnimal.getID() == current.getID();
     }
-
 }
