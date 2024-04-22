@@ -30,6 +30,7 @@ public class MainActivityTest {
     @Test
     public void testStartQuizButton() {
         // Perform a click on the start quiz button
+
         onView(withId(R.id.playquiz)).perform(click());
         // Verifies that QuizActivity is started
         intended(hasComponent(QuizActivity.class.getName()));

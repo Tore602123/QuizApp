@@ -8,7 +8,7 @@
       <entry key="DatabaseActivityTest">
         <State />
       </entry>
-      <entry key="DatabaseTest">
+      <entry key="MainActivity">
         <State />
       </entry>
       <entry key="QuizActivityTest">
@@ -17,7 +17,7 @@
       <entry key="app">
         <State />
       </entry>
-      <entry key="testDeleteItemFromDatabase()">
+      <entry key="markItemAndDeleteTest()">
         <State />
       </entry>
     </value>

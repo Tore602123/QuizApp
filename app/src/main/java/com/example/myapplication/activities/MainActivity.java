@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
@@ -29,18 +30,30 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        initializeButtons();
         initializeViewModel();
+        initializeButtons();
+    }
+
+    private void setupQuizButton() {
+        Button startQuizButton = findViewById(R.id.playquiz);
+        mainViewModel.getIsEnoughAnimals().observe(this, isEnough -> {
+            startQuizButton.setEnabled(isEnough);
+            if (isEnough) {
+                startQuizButton.setOnClickListener(view ->
+                        Util.startActivity(MainActivity.this, QuizActivity.class));
+            } else {
+                startQuizButton.setOnClickListener(view ->
+                        Toast.makeText(MainActivity.this, "Not enough animals for a quiz! Please wait...", Toast.LENGTH_SHORT).show());
+            }
+        });
+        mainViewModel.ensureAnimalsReady();
     }
 
     /**
      * Initializes buttons and sets click listeners for each.
      */
     private void initializeButtons() {
-        Button startQuizButton = findViewById(R.id.playquiz);
-        startQuizButton.setOnClickListener(view ->
-                Util.startActivity(MainActivity.this, QuizActivity.class));
+        setupQuizButton();
 
         Button databaseButton = findViewById(R.id.db);
         databaseButton.setOnClickListener(view ->
@@ -56,38 +69,5 @@ public class MainActivity extends AppCompatActivity {
      */
     private void initializeViewModel() {
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
-        mainViewModel.getAllAnimals().observe(this, this::handleAnimalListUpdate);
-    }
-
-    /**
-     * Handles updates to the list of animals. If there are fewer than 3 animals, initial entries are added.
-     * @param animals the current list of animals
-     */
-    private void handleAnimalListUpdate(List<Animal> animals) {
-        if (animals.size() < 3) {
-            addInitialEntries();
-        }
-    }
-
-    /**
-     * Adds initial entries to the database if there are less than three animals.
-     */
-    public void addInitialEntries() {
-        insertAnimalEntry(R.drawable.duck, "Duck");
-        insertAnimalEntry(R.drawable.dog, "Dog");
-        insertAnimalEntry(R.drawable.broccoli, "Broccoli");
-    }
-
-    /**
-     * Inserts a new animal entry into the database.
-     * @param imageResId The resource ID of the image.
-     * @param name The name of the animal.
-     */
-    private void insertAnimalEntry(int imageResId, String name) {
-        Bitmap bitmap = BitmapFactory.decodeResource(getResources(), imageResId);
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        bitmap.compress(Bitmap.CompressFormat.PNG, 100, stream);
-        byte[] byteArray = stream.toByteArray();
-        mainViewModel.insertAnimal(new Animal(name, byteArray));
     }
 }

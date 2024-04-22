@@ -1,10 +1,19 @@
 package com.example.myapplication.database;
 
+
+
+
 import android.app.Application;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
+import androidx.lifecycle.Transformations;
 
+import java.io.ByteArrayOutputStream;
+
+import java.io.ByteArrayOutputStream;
+import java.util.ArrayList;
 import java.util.List;
+
 import android.os.AsyncTask;
 
 import com.example.myapplication.model.Animal;
@@ -14,24 +23,20 @@ import com.example.myapplication.model.Animal;
  * This class abstracts the access to multiple data sources.
  */
 public class AnimalRepository {
-
     private MutableLiveData<List<Animal>> searchResults =
             new MutableLiveData<>();
     private LiveData<List<Animal>> allAnimals;
     private AnimalDAO animalDAO;
 
-    public LiveData<List<Animal>> getAllAnimals() {
-        return allAnimals;
-    }
-
-    public MutableLiveData<List<Animal>> getSearchResults() {
-        return searchResults;
-    }
 
     public AnimalRepository(Application application) {
         AnimalRoomDatabase db = AnimalRoomDatabase.getDatabase(application);
         animalDAO = db.animalDAO();
         allAnimals = animalDAO.getAll();
+    }
+
+    public LiveData<List<Animal>> getAllAnimals() {
+        return allAnimals;
     }
 
     public void insertAnimal(Animal animal) {
@@ -49,13 +54,17 @@ public class AnimalRepository {
         task.delegate = this;
         task.execute(name);
     }
+
     public int getAnimalCount() {
         return animalDAO.countAnimals();
     }
 
+
+
     private void asyncFinished(List<Animal> results) {
         searchResults.setValue(results);
     }
+
 
     private static class QueryAsyncTask extends
             AsyncTask<String, Void, List<Animal>> {

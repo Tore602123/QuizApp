@@ -20,8 +20,16 @@ public interface AnimalDAO {
     @Insert
     void insertAll(Animal... animals);
 
+    @Insert
+    public void insert(Animal a);
+
     @Delete
     void delete(Animal animal);
+
+
+
+
+
 
     /**
      * Get all animals
@@ -44,4 +52,7 @@ public interface AnimalDAO {
     // Add a method to count all animals
     @Query("SELECT COUNT(*) FROM animals")
     int countAnimals();
+
+    @Query("SELECT * FROM animals WHERE name = :name LIMIT 1")
+    Animal findByName(String name);
 }

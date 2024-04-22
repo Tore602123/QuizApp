@@ -2,52 +2,88 @@ package com.example.myapplication;
 
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.assertion.ViewAssertions.matches;
+import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.action.ViewActions.click;
 
-import android.app.Application;
+import android.view.View;
 
-import androidx.compose.ui.test.IdlingResource;
-import androidx.lifecycle.LiveData;
-import androidx.test.core.app.ActivityScenario;
-import androidx.test.espresso.Espresso;
+
+import androidx.lifecycle.ViewModelProvider;
+import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
 import androidx.test.espresso.contrib.RecyclerViewActions;
+import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 
+import org.hamcrest.Matcher;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import com.example.myapplication.activities.DatabaseActivity;
-import com.example.myapplication.database.AnimalRepository;
 
-import java.util.List;
+import com.example.myapplication.viewmodel.DatabaseViewModel;
 
 @RunWith(AndroidJUnit4.class)
 public class DatabaseActivityTest {
     @Rule
-    public ActivityScenarioRule<DatabaseActivity> activityScenarioRule = new ActivityScenarioRule<>(DatabaseActivity.class);
-    private AnimalRepository repository;
+    public ActivityScenarioRule<DatabaseActivity> activityRule = new ActivityScenarioRule<>(DatabaseActivity.class);
+    private CountingIdlingResource idlingResource;
 
     @Before
-    public void setupLiveDataIdlingResource() {
+    public void setUp() {
+        activityRule.getScenario().onActivity(activity -> {
+            DatabaseViewModel viewModel = new ViewModelProvider(activity).get(DatabaseViewModel.class);
+            idlingResource = viewModel.getIdlingResource();
+            IdlingRegistry.getInstance().register(idlingResource);
+        });
     }
     @Test
     public void markItemAndDeleteTest() {
-        // Assuming your RecyclerView items have checkboxes or buttons to mark them
-        int itemPosition = 1; // Index of the item to mark for deletion
-
-        // Scroll to the position and click the item (e.g., a checkbox within the RecyclerView item)
+        // Ensure the RecyclerView is visible on screen
         onView(withId(R.id.recycler_view))
-                .perform(RecyclerViewActions.scrollToPosition(itemPosition),
-                        RecyclerViewActions.actionOnItemAtPosition(itemPosition, click()));
+                .check(matches(isDisplayed()));
 
-        // Click on the delete button
+        int itemPosition = 1; // Index of the item to interact with
+
+        // Click the checkbox named 'markedForDelete' inside the RecyclerView item
+        onView(withId(R.id.recycler_view))
+                .perform(RecyclerViewActions.actionOnItemAtPosition(itemPosition,
+                        clickChildViewWithId(R.id.markedfordelete)));
+
+        // Click the delete button outside of the RecyclerView
         onView(withId(R.id.deletebtn)).perform(click());
-
-        // Optionally, check for some conditions after deletion like checking if RecyclerView has decreased by one item
-        // or if a specific item is no longer displayed. You would need to adapt this depending on how deletion is reflected in your UI.
     }
+
+    // Helper method to perform click on a specific child view by ID within RecyclerView
+    public static ViewAction clickChildViewWithId(final int id) {
+        return new ViewAction() {
+            @Override
+            public Matcher<View> getConstraints() {
+                return null;
+            }
+
+            @Override
+            public String getDescription() {
+                return "Click on a child view with specified ID.";
+            }
+
+            @Override
+            public void perform(UiController uiController, View view) {
+                View childView = view.findViewById(id);
+                childView.performClick();
+            }
+        };
+    }
+    @After
+    public void tearDown() {
+        IdlingRegistry.getInstance().unregister(idlingResource);
+    }
+
 }

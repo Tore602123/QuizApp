@@ -16,5 +16,6 @@ public class DatabaseViewModel extends BaseAnimalViewModel {
      */
     public DatabaseViewModel(Application application) {
         super(application);
+        
     }
 }

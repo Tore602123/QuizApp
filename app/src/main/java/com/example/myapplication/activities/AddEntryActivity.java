@@ -35,12 +35,13 @@ public class AddEntryActivity extends AppCompatActivity {
     private ImageView imagePreview;
     private EditText nameInput;
     private Bitmap selectedBitmap;
-    private AddEntryViewModel addEntryViewModel;
+    private AddEntryViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_entry);
+        viewModel = new ViewModelProvider(this).get(AddEntryViewModel.class);
 
         initializeViewModel();
         setupViews();
@@ -51,7 +52,7 @@ public class AddEntryActivity extends AppCompatActivity {
      * Initializes the ViewModel for adding entries.
      */
     private void initializeViewModel() {
-        addEntryViewModel = new ViewModelProvider(this).get(AddEntryViewModel.class);
+        viewModel = new ViewModelProvider(this).get(AddEntryViewModel.class);
     }
 
     /**
@@ -87,7 +88,7 @@ public class AddEntryActivity extends AppCompatActivity {
         if (selectedBitmap != null && !name.isEmpty()) {
             new Thread(() -> {
                 byte[] byteArray = bitmapToByteArray(selectedBitmap);
-                addEntryViewModel.insertAnimal(new Animal(name, byteArray));
+                viewModel.insertAnimal(new Animal(name, byteArray));
                 runOnUiThread(this::finish);
             }).start();
         }

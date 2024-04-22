@@ -8,6 +8,8 @@ import static androidx.test.espresso.intent.Intents.intending;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.junit.Assert.assertEquals;
 
+import androidx.lifecycle.ViewModelProvider;
+import androidx.test.espresso.IdlingRegistry;
 import androidx.test.espresso.idling.CountingIdlingResource;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
 import androidx.test.espresso.intent.Intents;
@@ -27,12 +29,16 @@ import android.os.Environment;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 
+import com.example.myapplication.activities.DatabaseActivity;
 import com.example.myapplication.database.AnimalRepository;
 import com.example.myapplication.activities.AddEntryActivity;
+import com.example.myapplication.viewmodel.AddEntryViewModel;
+import com.example.myapplication.viewmodel.QuizViewModel;
 
 import org.junit.After;
 import org.junit.Before;
@@ -45,11 +51,15 @@ public class AddEntryActivityTest {
     @Rule
     public IntentsTestRule<AddEntryActivity> intentsTestRule = new IntentsTestRule<>(AddEntryActivity.class, true, true);
     private AnimalRepository repository;
+    private AddEntryViewModel viewModel;
+    public ActivityScenarioRule<AddEntryActivity> activityRule = new ActivityScenarioRule<>(AddEntryActivity.class);
+    private CountingIdlingResource idlingResource;
 
     @Before
     public void setupRepository() {
         Application application = (Application) intentsTestRule.getActivity().getApplicationContext();
          repository = new AnimalRepository(application);
+
         // Stub all external intents
         intending(not(isInternal())).respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, createImageReturnIntent()));
     }
@@ -87,5 +97,10 @@ public class AddEntryActivityTest {
 
         assertEquals("Entry count should be incremented by 1", initialCount + 1, finalCount);
 
+    }
+
+    @After
+    public void tearDown() {
+        IdlingRegistry.getInstance().unregister(idlingResource);
     }
 }

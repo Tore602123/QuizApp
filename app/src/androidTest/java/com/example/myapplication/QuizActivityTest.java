@@ -1,12 +1,19 @@
 package com.example.myapplication;
 
 import android.content.Intent;
+
+import androidx.lifecycle.ViewModelProvider;
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
+import androidx.test.espresso.Espresso;
 import androidx.test.espresso.IdlingRegistry;
+import androidx.test.espresso.idling.CountingIdlingResource;
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
+import androidx.test.ext.junit.runners.AndroidJUnit4;
+
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import static androidx.test.espresso.Espresso.onView;
@@ -16,57 +23,30 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import com.example.myapplication.activities.QuizActivity;
+import com.example.myapplication.database.AnimalRepository;
 import com.example.myapplication.viewmodel.QuizViewModel;
-import com.example.myapplication.model.Animal;
 
 @RunWith(AndroidJUnit4.class)
 public class QuizActivityTest {
 
-    private ActivityScenario<QuizActivity> quizActivityScenario;
-    QuizViewModel viewModel;
+    @Rule
+    public ActivityScenarioRule<QuizActivity> activityRule = new ActivityScenarioRule<>(QuizActivity.class);
+    private CountingIdlingResource idlingResource;
 
     @Before
-    public void setup() {
-        Intent quizIntent = new Intent(ApplicationProvider.getApplicationContext(), QuizActivity.class);
-        quizActivityScenario = ActivityScenario.launch(quizIntent);
-        // Optional: Setup an Idling Resource if your activity has background threads
-    }
-
-    @Test
-    public void testQuizActivity() {
-        quizActivityScenario.onActivity(activity -> {
-            int counterCorrect = viewModel.getScore().getValue();
-
-            // Click on the correct button based on the button index
-            onView(withId(getButtonIdByIndex(0))).perform(click());
-
-            // Verify the updated text view after the first click
-            onView(withId(R.id.textViewQuiz))
-                    .check(matches(withText(counterCorrect + 1 + " right answers")));
-
-            int wrongButton = (1);
-            onView(withId(getButtonIdByIndex(wrongButton))).perform(click());
-
-            // Verify the updated text view after the second click
-            onView(withId(R.id.textViewQuiz))
-                    .check(matches(withText(counterCorrect + 1 + " right answers")));
+    public void setUp() {
+        activityRule.getScenario().onActivity(activity -> {
+            QuizViewModel viewModel = new ViewModelProvider(activity).get(QuizViewModel.class);
+            idlingResource = viewModel.getIdlingResource();
+            IdlingRegistry.getInstance().register(idlingResource);
         });
     }
-
-    private int getButtonIdByIndex(int index) {
-        switch (index) {
-            case 0:
-                return R.id.button1;
-            case 1:
-                return R.id.button2;
-            case 2:
-                return R.id.button3;
-            default:
-                throw new IllegalArgumentException("Invalid button index");
-        }
+    @Test
+    public void testDataLoading() {
+        onView(withId(R.id.button1)).check(matches(withText("Data loaded")));
     }
-
     @After
     public void tearDown() {
+        IdlingRegistry.getInstance().unregister(idlingResource);
     }
 }

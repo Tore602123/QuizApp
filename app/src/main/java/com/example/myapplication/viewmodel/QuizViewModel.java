@@ -1,15 +1,19 @@
 package com.example.myapplication.viewmodel;
 
 import android.app.Application;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Log;
 
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.example.myapplication.R;
 import com.example.myapplication.database.AnimalRepository;
 import com.example.myapplication.model.Animal;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,9 +31,10 @@ import java.util.stream.Collectors;
 import android.util.Log;
 
 import androidx.lifecycle.MutableLiveData;
+import androidx.test.espresso.idling.CountingIdlingResource;
 
 
-public class QuizViewModel extends AndroidViewModel {
+public class QuizViewModel extends BaseAnimalViewModel {
     private AnimalRepository repository;
     private MutableLiveData<List<Animal>> allAnimals;
     private MutableLiveData<Animal> currentAnimal;
@@ -48,7 +53,7 @@ public class QuizViewModel extends AndroidViewModel {
 
     public void initAnimals() {
         repository.getAllAnimals().observeForever(animals -> {
-            if (animals != null && !animals.isEmpty()) {
+            if (!animals.isEmpty()) {
                 // Remove duplicates based on animal name using a Set
                 List<Animal> uniqueAnimals = animals.stream()
                         .collect(Collectors.collectingAndThen(
@@ -59,6 +64,9 @@ public class QuizViewModel extends AndroidViewModel {
                 nextQuestion();  // Prepare the first question
             }
         });
+    }
+    public void start(){
+
     }
 
     public LiveData<List<Animal>> getOptions() {
@@ -124,4 +132,5 @@ public class QuizViewModel extends AndroidViewModel {
         Animal current = currentAnimal.getValue();
         return current != null && selectedAnimal.getID() == current.getID();
     }
+
 }

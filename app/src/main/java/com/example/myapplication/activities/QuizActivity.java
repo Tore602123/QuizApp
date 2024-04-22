@@ -16,8 +16,13 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.ViewModelProvider;
 
 import com.example.myapplication.R;
+import com.example.myapplication.database.AnimalRepository;
 import com.example.myapplication.model.Animal;
 import com.example.myapplication.viewmodel.QuizViewModel;
+
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 public class QuizActivity extends AppCompatActivity {
     private QuizViewModel viewModel;
@@ -26,25 +31,30 @@ public class QuizActivity extends AppCompatActivity {
     private TextView scoreDisplay, timerDisplay;
     private CountDownTimer timer;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        initializeViewModel();
+
+        viewModel.getAllAnimals().observe(this, animals -> {
+            if (animals != null && !animals.isEmpty()) {
+                setupUI();  // Call setupUI here to ensure it runs after data is initialized
+            }
+            viewModel.initAnimals();
+        });
+    }
+
+    private void setupUI() {
         setContentView(R.layout.activity_quiz);
-
-        viewModel = new ViewModelProvider(this).get(QuizViewModel.class);
-
         questionImage = findViewById(R.id.imageViewQuiz);
         option1 = findViewById(R.id.button1);
         option2 = findViewById(R.id.button2);
         option3 = findViewById(R.id.button3);
-
         scoreDisplay = findViewById(R.id.scoreTextView);
         timerDisplay = findViewById(R.id.timerTextView);
-
-        setupObservers();  // Combine all observer setups here
-        viewModel.initAnimals();  // Start loading and preparing data
+        setupObservers();
     }
-
     private void setupObservers() {
         viewModel.getCurrentAnimal().observe(this, animal -> {
             if (animal != null && animal.getImage() != null) {
@@ -69,6 +79,9 @@ public class QuizActivity extends AppCompatActivity {
         viewModel.getScore().observe(this, score -> {
             scoreDisplay.setText("Score: " + score);  // Update the score display
         });
+    }
+    private void initializeViewModel() {
+        viewModel = new ViewModelProvider(this).get(QuizViewModel.class);
     }
 
     private void resetAndStartTimer() {
@@ -101,5 +114,7 @@ public class QuizActivity extends AppCompatActivity {
         }
         viewModel.nextQuestion(); // Load next question regardless of answer correctness
     }
+
+
 
 }

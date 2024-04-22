@@ -13,6 +13,7 @@ import com.example.myapplication.R;
 import com.example.myapplication.database.AnimalRepository;
 import com.example.myapplication.model.Animal;
 import com.example.myapplication.view.AnimalAdapter;
+import com.example.myapplication.viewmodel.AddEntryViewModel;
 import com.example.myapplication.viewmodel.DatabaseViewModel;
 
 import java.util.Collections;
@@ -25,15 +26,14 @@ import java.util.List;
 public class DatabaseActivity extends AppCompatActivity {
 
     private AnimalAdapter animalAdapter;
-    private DatabaseViewModel databaseViewModel;
+    private DatabaseViewModel viewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_database);
 
-        // Initialize ViewModel and Repository
-        databaseViewModel = new ViewModelProvider(this).get(DatabaseViewModel.class);
+        initializeViewModel();
 
         // Setup RecyclerView with the adapter
         setupRecyclerView();
@@ -53,12 +53,15 @@ public class DatabaseActivity extends AppCompatActivity {
     }
 
     private void observeAnimalData() {
-        databaseViewModel.getAllAnimals().observe(this, animals -> {
+        viewModel.getAllAnimals().observe(this, animals -> {
             animals.sort(Comparator.comparing(Animal::getName));
             animalAdapter.setAnimals(animals);
         });
     }
 
+    private void initializeViewModel() {
+        viewModel = new ViewModelProvider(this).get(DatabaseViewModel.class);
+    }
     private void setupUIInteractions() {
         findViewById(R.id.deletebtn).setOnClickListener(view -> deleteMarkedAnimals());
         findViewById(R.id.addbtn).setOnClickListener(view -> startActivity(new Intent(this, AddEntryActivity.class)));
@@ -80,8 +83,5 @@ public class DatabaseActivity extends AppCompatActivity {
         List<Animal> reversedAnimals = animalAdapter.getAnimals();
         Collections.reverse(reversedAnimals);
         animalAdapter.setAnimals(reversedAnimals);
-    }
-    public LiveData<List<Animal>> getAll() {
-        return databaseViewModel.getAllAnimals();
     }
 }
