@@ -26,6 +26,7 @@ import android.content.Intent;
 import android.content.res.Resources;
 import android.net.Uri;
 import android.os.Environment;
+import android.util.Log;
 
 import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.intent.rule.IntentsTestRule;
@@ -59,7 +60,7 @@ public class AddEntryActivityTest {
     public void setupRepository() {
         Application application = (Application) intentsTestRule.getActivity().getApplicationContext();
          repository = new AnimalRepository(application);
-
+        Log.d(repository.getAllAnimals().toString(),"Saus");
         // Stub all external intents
         intending(not(isInternal())).respondWith(new Instrumentation.ActivityResult(Activity.RESULT_OK, createImageReturnIntent()));
     }
