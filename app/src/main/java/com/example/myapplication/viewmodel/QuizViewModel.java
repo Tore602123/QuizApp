@@ -25,6 +25,7 @@ import androidx.lifecycle.LifecycleOwner;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -95,8 +96,8 @@ public class QuizViewModel extends BaseAnimalViewModel {
     }
 
     private void generateOptions(Animal correctAnimal) {
-        List<Animal> currentList = new ArrayList<>(allAnimals.getValue());  // Clone the current list for manipulation
-        if (currentList != null && currentList.size() >= 3) {
+        List<Animal> currentList = new ArrayList<>(Objects.requireNonNull(allAnimals.getValue()));  // Clone the current list for manipulation
+        if (currentList.size() >= 3) {
             currentList.remove(correctAnimal);  // Remove the correct animal
             Collections.shuffle(currentList);  // Shuffle to randomize
 
