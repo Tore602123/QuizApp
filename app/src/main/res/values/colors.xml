@@ -1,13 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="purple_200">#FFBB86FC</color>
-    <color name="purple_500">#FF6200EE</color>
-    <color name="purple_700">#FF3700B3</color>
-    <color name="teal_200">#FF03DAC5</color>
-    <color name="teal_700">#FF018786</color>
+    <!-- Darker purple shades -->
+    <color name="purple_200">#36454F</color> <!-- Previously #FFBB86FC, now a deeper lilac -->
+    <color name="purple_500">#301934</color> <!-- Previously #FF6200EE, now a darker purple -->
+    <color name="purple_700">#343434</color> <!-- Previously #FF3700B3, slightly darkened -->
+
+    <!-- Darker teal shades -->
+    <color name="teal_200">#00897B</color> <!-- Previously #FF03DAC5, now a richer teal -->
+    <color name="teal_700">#004D40</color> <!-- Previously #FF018786, now a much darker teal -->
+
+    <!-- Basic colors (unchanged) -->
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-    <color name="colorPrimary">#6200EE</color>
-    <color name="colorPrimaryDark">#3700B3</color>
-    <color name="colorAccent">#03DAC5</color>
 </resources>

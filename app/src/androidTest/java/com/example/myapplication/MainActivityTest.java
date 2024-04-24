@@ -1,54 +1,67 @@
 package com.example.myapplication;
 
-import androidx.test.espresso.intent.rule.IntentsTestRule;
+import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.matcher.ViewMatchers.withId;
+
+import androidx.test.core.app.ActivityScenario;
+import androidx.test.espresso.intent.Intents;
+
+import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
-import com.example.myapplication.R;
-import com.example.myapplication.activities.AddEntryActivity;
+
 import com.example.myapplication.activities.DatabaseActivity;
 import com.example.myapplication.activities.MainActivity;
 import com.example.myapplication.activities.QuizActivity;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import static androidx.test.espresso.Espresso.onView;
-import static androidx.test.espresso.action.ViewActions.click;
-import static androidx.test.espresso.matcher.ViewMatchers.withId;
-import static androidx.test.espresso.intent.Intents.intended;
-import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 
 @RunWith(AndroidJUnit4.class)
-@LargeTest
 public class MainActivityTest {
+    private ActivityScenario<MainActivity> activityScenario;
 
-    @Rule
-    public IntentsTestRule<MainActivity> intentsTestRule = new IntentsTestRule<>(MainActivity.class);
 
+    /**
+     * Sets up the testing environment before each test.
+     * Initializes the Intents framework and launches the activity under test.
+     */
+    @Before
+    public void setUp(){
+        Intents.init();
+        activityScenario = ActivityScenario.launch(MainActivity.class);
+    }
+    /**
+     * Tests if clicking on the quiz button navigates to the QuizActivity.
+     */
     @Test
-    public void testStartQuizButton() {
-        // Perform a click on the start quiz button
-
-        onView(withId(R.id.playquiz)).perform(click());
-        // Verifies that QuizActivity is started
+    public void testNavigationToQuizActivity() {
+        onView(withId(R.id.quiz_button)).perform(click());
         intended(hasComponent(QuizActivity.class.getName()));
     }
 
+    /**
+     * Tests if clicking on the database button navigates to the DatabaseActivity.
+     */
     @Test
-    public void testDatabaseButton() {
-        // Perform a click on the database button
-        onView(withId(R.id.db)).perform(click());
-        // Verifies that DatabaseActivity is started
+    public void testNavigationToDatabaseActivity() {
+        onView(withId(R.id.db_button)).perform(click());
         intended(hasComponent(DatabaseActivity.class.getName()));
     }
-
-    @Test
-    public void testAddEntryButton() {
-        // Perform a click on the add button
-        onView(withId(R.id.add)).perform(click());
-        // Verifies that AddEntryActivity is started
-        intended(hasComponent(AddEntryActivity.class.getName()));
+    /**
+     * Cleans up the testing environment after each test.
+     */
+    @After
+    public void cleanUp() {
+        Intents.release();
+        activityScenario.close();
     }
 }

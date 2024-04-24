@@ -1,163 +1,189 @@
 package com.example.myapplication.activities;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultCallback;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
 import android.content.Intent;
+import android.net.Uri;
+
+import com.example.myapplication.databinding.ActivityAddEntryBinding;
+import com.example.myapplication.viewmodel.AddEntryViewModel;
+
+
+import android.app.Activity;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.util.Consumer;
-import androidx.lifecycle.ViewModelProvider;
-
-import com.example.myapplication.R;
-import com.example.myapplication.model.Animal;
-import com.example.myapplication.viewmodel.AddEntryViewModel;
-
-import java.io.ByteArrayOutputStream;
+import com.example.myapplication.model.ImageData;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 
+import java.util.concurrent.Future;
+
 /**
- * Activity to add a new animal entry.
+ * Activity to add a new entry with an image and name.
+ */
+/**
+ * AddEntryActivity provides functionality to add a new entry consisting of a name and an image to a database.
+ * It supports image selection from the device's gallery and input of a name for the image before saving.
  */
 public class AddEntryActivity extends AppCompatActivity {
 
-    private static final int REQUEST_CODE_PICK_IMAGE = 1;
+    private ActivityAddEntryBinding binding;
+    private AddEntryViewModel addEntryViewModel;
+    private Bitmap bitmap;
+    private String name;
+    private ImageView image;
 
-    private String name = "";
-    private ImageView imagePreview;
-    private EditText nameInput;
-    private Bitmap selectedBitmap;
-    private AddEntryViewModel viewModel;
+    // Launcher for starting the image picker activity
+    private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            new ActivityResultCallback<ActivityResult>() {
+                @Override
+                public void onActivityResult(ActivityResult result) {
+                    handleImagePickerResult(result);
+                }
+            }
+    );
 
+    /**
+     * Initializes the activity, sets up UI components, and prepares listeners.
+     * @param savedInstanceState If the activity is being re-initialized after previously being shut down then
+     *                           this Bundle contains the most recent data, otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_entry);
-        viewModel = new ViewModelProvider(this).get(AddEntryViewModel.class);
-
-        initializeViewModel();
-        setupViews();
+        setupUI();
         setupListeners();
     }
 
     /**
-     * Initializes the ViewModel for adding entries.
+     * Sets up user interface components and initializes ViewModel.
      */
-    private void initializeViewModel() {
-        viewModel = new ViewModelProvider(this).get(AddEntryViewModel.class);
+    private void setupUI() {
+        binding = ActivityAddEntryBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+
+        addEntryViewModel = new ViewModelProvider(this).get(AddEntryViewModel.class);
+        image = binding.addItemImage;
     }
 
     /**
-     * Sets up UI components by finding views and configuring them.
-     */
-    private void setupViews() {
-        imagePreview = findViewById(R.id.imageanimal);
-        nameInput = findViewById(R.id.addAnimalName);
-    }
-
-    /**
-     * Sets up listeners for UI interactions.
+     * Configures listeners for UI elements including text input, buttons for gallery access, and submission.
      */
     private void setupListeners() {
-        findViewById(R.id.gallery).setOnClickListener(view -> pickImageFromGallery());
-        nameInput.addTextChangedListener(new SimpleTextWatcher(s -> name = s));
-        findViewById(R.id.addentrybtn).setOnClickListener(view -> addAnimalEntry());
+        binding.addItemInput.addTextChangedListener(new TextWatcherAdapter() {
+            @Override
+            public void afterTextChanged(Editable s) {
+                name = s.toString();
+            }
+        });
+
+        binding.galleryButton.setOnClickListener(view -> launchImagePicker());
+        binding.addButton.setOnClickListener(view -> attemptAddEntry());
     }
 
     /**
-     * Starts an intent to pick an image from the gallery.
+     * Launches an Intent to pick an image from the user's gallery.
      */
-    private void pickImageFromGallery() {
-        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+    private void launchImagePicker() {
+        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
-        startActivityForResult(intent, REQUEST_CODE_PICK_IMAGE);
+        launcher.launch(intent);
     }
 
     /**
-     * Adds the new animal entry to the database.
+     * Handles the result from the image picker activity, setting the selected image on the ImageView.
+     * @param result The result from the activity.
      */
-    private void addAnimalEntry() {
-        if (selectedBitmap != null && !name.isEmpty()) {
-            new Thread(() -> {
-                byte[] byteArray = bitmapToByteArray(selectedBitmap);
-                viewModel.insertAnimal(new Animal(name, byteArray));
-                runOnUiThread(this::finish);
-            }).start();
+    private void handleImagePickerResult(ActivityResult result) {
+        if (result.getResultCode() == Activity.RESULT_OK) {
+            Intent data = result.getData();
+            if (data != null && data.getData() != null) {
+                Uri imageUri = data.getData();
+                loadImageFromUri(imageUri);
+            } else {
+                Toast.makeText(this, "No image selected!", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
     /**
-     * Converts a Bitmap to a byte array.
-     *
-     * @param bitmap The Bitmap to convert.
-     * @return The byte array.
-     */
-    private byte[] bitmapToByteArray(Bitmap bitmap) {
-        // Calculate the scaling factor based on the desired width or height
-        int maxWidth = 800; // or whatever width you deem appropriate
-        int maxHeight = 800; // or whatever height you deem appropriate
-        float scale = Math.min(((float) maxWidth / bitmap.getWidth()), ((float) maxHeight / bitmap.getHeight()));
-
-        // Create a new scaled bitmap
-        Bitmap scaledBitmap = Bitmap.createScaledBitmap(bitmap,
-                (int) (bitmap.getWidth() * scale), (int) (bitmap.getHeight() * scale), true);
-
-        // Compress the scaled bitmap to a byte array
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
-        scaledBitmap.compress(Bitmap.CompressFormat.JPEG, 75, stream); // Compress quality set to 75
-
-        return stream.toByteArray();
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        if (requestCode == REQUEST_CODE_PICK_IMAGE && resultCode == RESULT_OK) {
-            Uri imageUri = data.getData();
-            loadBitmapFromUri(imageUri);
-        }
-    }
-
-    /**
-     * Loads a Bitmap from a Uri and sets it to the ImageView.
-     *
+     * Loads an image from the specified URI into the ImageView.
      * @param imageUri The URI of the image to load.
      */
-    private void loadBitmapFromUri(Uri imageUri) {
-        try (InputStream inputStream = getContentResolver().openInputStream(imageUri)) {
-            selectedBitmap = BitmapFactory.decodeStream(inputStream);
-            imagePreview.setImageBitmap(selectedBitmap);
+    private void loadImageFromUri(Uri imageUri) {
+        try {
+            InputStream inputStream = getContentResolver().openInputStream(imageUri);
+            bitmap = BitmapFactory.decodeStream(inputStream);
+            image.setImageBitmap(bitmap);
         } catch (FileNotFoundException e) {
-            Toast.makeText(this, "File not found. Please try another image.", Toast.LENGTH_LONG).show();
-        } catch (Exception e) {
-            Toast.makeText(this, "Error loading image.", Toast.LENGTH_LONG).show();
+            Toast.makeText(getApplicationContext(), "Image file not found!", Toast.LENGTH_SHORT).show();
         }
     }
 
     /**
-     * SimpleTextWatcher simplifies TextWatcher interface for afterTextChanged use.
+     * Attempts to add a new entry to the database after validating the input data.
      */
-    private class SimpleTextWatcher implements TextWatcher {
-        private final Consumer<String> afterChanged;
-
-        SimpleTextWatcher(Consumer<String> afterChanged) {
-            this.afterChanged = afterChanged;
+    private void attemptAddEntry() {
+        if (isValidEntry()) {
+            addEntryToDatabase();
+        } else {
+            alertIncompleteInfo();
         }
+    }
 
+    /**
+     * Checks if the name and image have been properly entered and selected.
+     * @return True if valid, False otherwise.
+     */
+    private boolean isValidEntry() {
+        return name != null && !name.isEmpty() && image.getDrawable() != null;
+    }
+
+    /**
+     * Adds the entry to the database and handles the result, displaying appropriate messages.
+     */
+    private void addEntryToDatabase() {
+        Future<Boolean> success = addEntryViewModel.insert(new ImageData(name, bitmap));
+        try {
+            if (success.get()) {
+                Toast.makeText(getApplicationContext(), "Item added to database!", Toast.LENGTH_SHORT).show();
+                finish();
+            } else {
+                Toast.makeText(getApplicationContext(), "This item already exists in the database!", Toast.LENGTH_SHORT).show();
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to complete database operation", e);
+        }
+    }
+
+    /**
+     * Alerts the user if required information is missing, either the name or the image.
+     */
+    private void alertIncompleteInfo() {
+        if (name == null || name.isEmpty()) {
+            Toast.makeText(getApplicationContext(), "You need to enter a name!", Toast.LENGTH_SHORT).show();
+        } else {
+            Toast.makeText(getApplicationContext(), "You need to pick an image!", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    /**
+     * Adapter class for TextWatcher with default implementations to simplify creation of listeners for text changes.
+     */
+    private static abstract class TextWatcherAdapter implements TextWatcher {
         public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
-
         public void onTextChanged(CharSequence s, int start, int before, int count) {}
-
-        public void afterTextChanged(Editable s) {
-            afterChanged.accept(s.toString());
-        }
     }
 }

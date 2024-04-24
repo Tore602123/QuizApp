@@ -1,73 +1,125 @@
 package com.example.myapplication.activities;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
-import android.widget.Button;
-import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
+
 import androidx.lifecycle.ViewModelProvider;
 
+
 import com.example.myapplication.R;
-import com.example.myapplication.model.Animal;
+
+import com.example.myapplication.databinding.ActivityMainBinding;
+import com.example.myapplication.model.ImageData;
+import com.example.myapplication.util.DatabaseUtil;
 import com.example.myapplication.util.Util;
 import com.example.myapplication.viewmodel.MainViewModel;
 
-import java.io.ByteArrayOutputStream;
-import java.util.List;
+import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
+
+import java.util.Objects;
 
 
 /**
- * Main activity for the Quiz App, which serves as the entry point of the application.
- * This activity allows users to start different quizzes and add entries to the database.
+ * MainActivity serves as the launch activity for the application,
+ * allowing navigation to other activities and managing quiz difficulty settings.
  */
 public class MainActivity extends AppCompatActivity {
 
+    private ActivityMainBinding binding;
+    private String difficulty = "easy";
     private MainViewModel mainViewModel;
 
+    /**
+     * Called when the activity is starting. This is where most initialization should go:
+     * calling setContentView(int) to inflate the activity's UI, using findViewById(int)
+     * to programmatically interact with widgets in the UI, calling ViewModelProvider to
+     * retrieve ViewModel instances, etc.
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     * previously being shut down then this Bundle contains the most recent data,
+     * otherwise it is null.
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        binding = ActivityMainBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
         initializeViewModel();
-        initializeButtons();
-    }
-
-    private void setupQuizButton() {
-        Button startQuizButton = findViewById(R.id.playquiz);
-        mainViewModel.getIsEnoughAnimals().observe(this, isEnough -> {
-            startQuizButton.setEnabled(isEnough);
-            if (isEnough) {
-                startQuizButton.setOnClickListener(view ->
-                        Util.startActivity(MainActivity.this, QuizActivity.class));
-            } else {
-                startQuizButton.setOnClickListener(view ->
-                        Toast.makeText(MainActivity.this, "Not enough animals for a quiz! Please wait...", Toast.LENGTH_SHORT).show());
-            }
-        });
-        mainViewModel.ensureAnimalsReady();
+        setupToolbar();
+        setupButtons();
     }
 
     /**
-     * Initializes buttons and sets click listeners for each.
-     */
-    private void initializeButtons() {
-        setupQuizButton();
-
-        Button databaseButton = findViewById(R.id.db);
-        databaseButton.setOnClickListener(view ->
-                Util.startActivity(MainActivity.this, DatabaseActivity.class));
-
-        Button addButton = findViewById(R.id.add);
-        addButton.setOnClickListener(view ->
-                Util.startActivity(MainActivity.this, AddEntryActivity.class));
-    }
-
-    /**
-     * Initializes the ViewModel and sets up observers for data changes.
+     * Initializes the main view model for the activity. Observes changes to the image list
+     * and populates the database with default data if it's empty.
      */
     private void initializeViewModel() {
         mainViewModel = new ViewModelProvider(this).get(MainViewModel.class);
+        mainViewModel.getAllImages().observe(this, images -> {
+            if (images.isEmpty()) {
+                mainViewModel.insertSeveral(DatabaseUtil.getDefaults(getResources()));
+            }
+        });
+    }
+
+    /**
+     * Sets up the toolbar by inflating the menu resource into it.
+     */
+    private void setupToolbar() {
+        setSupportActionBar(binding.toolbar);
+    }
+
+    /**
+     * Configures the buttons for navigation and functionality, including setting event listeners
+     * for user interactions like button clicks and switch toggles.
+     */
+    private void setupButtons() {
+        binding.content.difficultySwitch.setOnCheckedChangeListener(this::switchDifficulty);
+        binding.content.quizButton.setOnClickListener(view ->
+                Util.startActivity(MainActivity.this, QuizActivity.class, "difficulty", difficulty));
+        binding.content.dbButton.setOnClickListener(view ->
+                Util.startActivity(MainActivity.this, DatabaseActivity.class));
+    }
+
+    /**
+     * Inflates the menu for this activity. This adds items to the action bar if it is present.
+     *
+     * @param menu The options menu in which you place your items.
+     * @return You must return true for the menu to be displayed; if you return false it will not be shown.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    /**
+     * Handles action bar item clicks here. The action bar will automatically handle clicks on the
+     * Home/Up button, so long as you specify a parent activity in AndroidManifest.xml.
+     *
+     * @param item The menu item that was selected.
+     * @return boolean Return false to allow normal menu processing to proceed, true to consume it here.
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == R.id.action_settings) {
+            // Here you might open settings activity or perform other action
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    /**
+     * Toggles the difficulty of the quiz between "easy" and "hard".
+     * This method is linked to a switch and will change the state of `difficulty` accordingly.
+     *
+     * @param unusedObject An unused parameter for method reference compatibility.
+     * @param isHardMode Whether the "hard" difficulty should be activated.
+     */
+    private void switchDifficulty(Object unusedObject, boolean isHardMode) {
+        difficulty = isHardMode ? "hard" : "easy";
     }
 }

@@ -4,83 +4,124 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:id="@+id/QuizLayout"
     tools:context=".activities.QuizActivity">
 
     <LinearLayout
-        android:layout_width="430dp"
-        android:layout_height="760dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:orientation="vertical"
-        android:background="@drawable/backgroundquiz"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.5"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.5">
+        >
+
+        <TextView
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            android:text="Guess the image!"
+            android:textAlignment="center"
+            />
 
         <ImageView
-            android:id="@+id/imageViewQuiz"
-            android:layout_width="300dp"
-            android:layout_height="300dp"
+            android:id="@+id/quiz_image"
+            android:layout_height="400dp"
+            android:layout_width="350dp"
+            android:layout_marginTop="5dp"
             android:layout_gravity="center"
-            android:layout_marginTop="30dp"/>
-
+            />
         <TextView
-            android:id="@+id/timerTextView"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
-            android:textSize="18sp"
-            android:textColor="@color/black"
-            android:text="Time: 30s"
-            android:gravity="center"
-            android:layout_marginTop="10dp"/>
-
-        <Button
-            android:id="@+id/button1"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:text="alternative 1"
-            android:layout_marginTop="30dp"
-            android:layout_gravity="center"
-            android:textAllCaps="true"
-            android:textSize="20sp"
-            android:background="@drawable/button"
-            app:backgroundTint="@null"/>
-
-        <Button
-            android:id="@+id/button2"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:text="alternative 2"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center"
-            android:textAllCaps="true"
-            android:textSize="20sp"
-            android:background="@drawable/button"
-            app:backgroundTint="@null"/>
-
-        <Button
-            android:id="@+id/button3"
-            android:layout_width="250dp"
-            android:layout_height="60dp"
-            android:text="alternative 3"
-            android:layout_marginTop="10dp"
-            android:layout_gravity="center"
-            android:textAllCaps="true"
-            android:textSize="20sp"
-            android:background="@drawable/button"
-            app:backgroundTint="@null"/>
-
-        <TextView
-            android:id="@+id/scoreTextView"
+            android:id="@+id/timerText"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:text="Score: 0"
-            android:textColor="@color/black"
+            android:layout_marginTop="16dp"
             android:textSize="18sp"
-            android:layout_gravity="center"/>
+            android:gravity="center_horizontal"
+            android:visibility="gone"
+            android:layout_gravity="center"
+            />
+        <LinearLayout
+            android:id="@+id/timer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone"
+            >
+
+            <ProgressBar
+                android:id="@+id/timer_progress"
+                style="?android:attr/progressBarStyleHorizontal"
+                android:layout_width="350dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_marginTop="5dp"
+                />
+
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/correct_answers"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="0 correct answers out of 0 questions"
+            android:textAlignment="center"
+            />
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="350dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="5dp"
+            />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            >
+
+            <Button
+                android:id="@+id/option_1"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="30dp"
+                android:layout_marginRight="5dp"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="option1"
+                />
+
+            <Button
+                android:id="@+id/option_2"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="option2"/>
+
+            <Button
+                android:id="@+id/option_3"
+                android:layout_width="100dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="30dp"
+                android:layout_weight="1"
+                android:gravity="center_horizontal"
+                android:text="option3"
+                />
+        </LinearLayout>
+
+        <Button
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_gravity="center"
+            android:text="Back to main menu"
+            android:visibility="gone"
+            />
+
     </LinearLayout>
+
 </androidx.constraintlayout.widget.ConstraintLayout>
