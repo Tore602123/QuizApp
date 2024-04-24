@@ -23,10 +23,6 @@
 - Employs `Intents` to intercept and assert properties of intents, verifying that the correct navigation occurs.
 - `ActivityScenario` manages the lifecycle of the activity under test, ensuring that the environment mirrors a real-world usage scenario.
 
-**Conclusion**:
-This test class effectively validates critical navigation pathways from the main interface of the application, ensuring that users can access different parts of the app as designed. The detailed setup and clear assertions provide robust validation of intent-based navigation, a key component of the application's usability.
-
-
 ### 2. `DatabaseActivityTest`
 
 **Objective**: To verify that the image management functionality within `DatabaseActivity` operates as expected, including adding and deleting images from the database.
@@ -38,27 +34,10 @@ This test class effectively validates critical navigation pathways from the main
 - `testAddImage()`: Tests the functionality of adding an image to the database. This test simulates the entire flow of selecting an image from a gallery and adding it with a specific name (e.g., "Cat"). It uses mocked intents to simulate gallery selection and verifies the increment in the image count within the database.
 - `testDeleteImage()`: Confirms the ability to delete an image from the database. It simulates the user action of deleting an image named "Cat" and checks if the database's image count decrements accordingly.
 
-**Testing Steps**:
-- **Add Image Test**:
-  - Observes the initial number of images in the database.
-  - Simulates clicking the add button to trigger the image addition UI.
-  - Mocks an intent for selecting an image and simulates the response from the gallery.
-  - Enters the image name and confirms the addition through the UI.
-  - Observes the number of images post-addition and asserts the expected increase.
-- **Delete Image Test**:
-  - Captures the initial state of the database for reference.
-  - Simulates the user action of deleting a previously added image by interacting with UI elements directly associated with the image (e.g., delete button next to the image’s name).
-  - Confirms the deletion action via the UI and observes the new state of the database.
-  - Verifies that the image count reflects the deletion accurately.
-
 **Methodology**:
 - Utilizes `Espresso` for UI interactions such as clicking and text entry.
 - Employs `ActivityScenario` to manage and test activity states.
 - Implements intent mocking with `Intents.test()` to control external dependencies like image gallery access.
-
-**Conclusion**:
-This suite effectively tests critical functionalities of the `DatabaseActivity`, ensuring robustness in the application's ability to manage images. Detailed assertions and intent mocking provide a thorough examination of the activity’s response to user inputs and system interactions.
-
 
 ### 3. `QuizActivityTest`
 
@@ -80,7 +59,5 @@ This suite effectively tests critical functionalities of the `DatabaseActivity`,
 - `getChoiceForCorrectOption(int correctOption)`: Returns the UI element ID of the correct answer option based on its index. This method is crucial for testing correct answer selection.
 - `getChoiceForIncorrectOption(int correctOption)`: Provides the UI element ID of an incorrect option, ensuring the test avoids the correct answer for validating error handling.
 
-**Conclusion**:
-These tests are designed to rigorously check the logical correctness of the user interaction within the `QuizActivity`, focusing on the accuracy of scorekeeping mechanisms in a controlled setting. Documentation of both successful and unsuccessful test outcomes provides a detailed record of the application's behavior under test conditions.
 
 
