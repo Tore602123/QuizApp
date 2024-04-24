@@ -30,6 +30,10 @@
 **Environment Setup**:
 - Each test starts by initializing the `Intents` framework and launching `DatabaseActivity`, providing a clean state for each test case.
 
+**Test Methods**:
+- `testAddImage()`: Tests the functionality of adding an image to the database. This test simulates the entire flow of selecting an image from a gallery and adding it with a specific name (e.g., "Cat"). It uses mocked intents to simulate gallery selection and verifies the increment in the image count within the database.
+- `testDeleteImage()`: Confirms the ability to delete an image from the database. It simulates the user action of deleting an image named "Cat" and checks if the database's image count decrements accordingly.
+
 **Testing Steps**:
 - **Add Image Test**:
   - Observes the initial number of images in the database.
@@ -42,10 +46,6 @@
   - Simulates the user action of deleting a previously added image by interacting with UI elements directly associated with the image (e.g., delete button next to the image’s name).
   - Confirms the deletion action via the UI and observes the new state of the database.
   - Verifies that the image count reflects the deletion accurately.
-
-**Test Methods**:
-- `testAddImage()`: Tests the functionality of adding an image to the database. This test simulates the entire flow of selecting an image from a gallery and adding it with a specific name (e.g., "Cat"). It uses mocked intents to simulate gallery selection and verifies the increment in the image count within the database.
-- `testDeleteImage()`: Confirms the ability to delete an image from the database. It simulates the user action of deleting an image named "Cat" and checks if the database's image count decrements accordingly.
 
 **Methodology**:
 - Utilizes `Espresso` for UI interactions such as clicking and text entry.
