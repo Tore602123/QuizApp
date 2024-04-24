@@ -1,4 +1,4 @@
-## APK Analysis
+# APK Analysis
 
 During the testing process, two APK are used:
 
@@ -22,7 +22,7 @@ During the testing process, two APK are used:
 
 7. **Handling Unknown and Original Files**: Finally, `apktool` keeps any files it doesn’t directly process, like custom files specific to the app, unchanged.
 
-## `Test Documentation`
+# Test Documentation
 
 ### 1. `MainActivityTest`
 
