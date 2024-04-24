@@ -40,6 +40,10 @@ public class BaseViewModel extends AndroidViewModel {
         repository.insertImages(images);
     }
 
+    public LiveData<List<String>> getAllNames() {
+        return repository.getAllNames();
+    }
+
     public Future<Void> deleteAll() {
         return repository.clearDatabase();
     }

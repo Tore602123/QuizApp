@@ -23,18 +23,22 @@ import com.example.myapplication.model.ImageData;
 
 public class ImageRepository {
     private LiveData<List<Image>> allImages;
+    private LiveData<List<String>> allNames;
     private ImageRoomDatabase database;
     private ImageDAO imageDAO;
     private Application application;
     public LiveData<List<Image>> getAllImages() {
         return allImages;
     }
-
+    public LiveData<List<String>> getAllNames(){
+        return allNames;
+    }
     public ImageRepository(Application application) {
         this.application = application;
         database = ImageRoomDatabase.getDatabase(application);
         imageDAO = database.imageDAO();
         allImages = imageDAO.getAllImages();
+        allNames= imageDAO.getAllNames();
     }
 
     /**
