@@ -1,37 +1,31 @@
 package com.example.myapplication.activities;
 
-import androidx.activity.result.ActivityResult;
-import androidx.activity.result.ActivityResultCallback;
-import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModelProvider;
-
-import android.content.Intent;
-import android.net.Uri;
-
-import com.example.myapplication.databinding.ActivityAddEntryBinding;
-import com.example.myapplication.viewmodel.AddEntryViewModel;
-
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResult;
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.myapplication.databinding.ActivityAddEntryBinding;
 import com.example.myapplication.model.ImageData;
+import com.example.myapplication.viewmodel.AddEntryViewModel;
+
 import java.io.FileNotFoundException;
 import java.io.InputStream;
-
 import java.util.concurrent.Future;
 
-/**
- * Activity to add a new entry with an image and name.
- */
 /**
  * AddEntryActivity provides functionality to add a new entry consisting of a name and an image to a database.
  * It supports image selection from the device's gallery and input of a name for the image before saving.
@@ -47,12 +41,7 @@ public class AddEntryActivity extends AppCompatActivity {
     // Launcher for starting the image picker activity
     private final ActivityResultLauncher<Intent> launcher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
-            new ActivityResultCallback<ActivityResult>() {
-                @Override
-                public void onActivityResult(ActivityResult result) {
-                    handleImagePickerResult(result);
-                }
-            }
+            this::handleImagePickerResult
     );
 
     /**
@@ -96,8 +85,9 @@ public class AddEntryActivity extends AppCompatActivity {
     /**
      * Launches an Intent to pick an image from the user's gallery.
      */
+    @SuppressLint("IntentReset")
     private void launchImagePicker() {
-        Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        @SuppressLint("IntentReset") Intent intent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
         intent.setType("image/*");
         launcher.launch(intent);
     }
