@@ -1,4 +1,28 @@
-# MyApp Testing Documentation
+## APK Analysis
+
+During the testing process, two APK are used:
+
+1. **App APK (`app-debug.apk`)**: This is the debug version of our application, which includes all the app's compiled code, resources, and manifest file. This APK is what you would typically install on a device during development and testing phases.
+
+2. **Test APK (`app-debug-androidTest.apk`)**: This is a separate APK dedicated to running the tests. It contains the compiled test code, including any test-specific resources and dependencies.
+
+## APK Decoding and interpration with `apktool`
+
+1. **Loading Resource Table**: The tool starts by reading binary XML files that list all the resources in the APK, like images and text. This helps `apktool` identify and use these resources properly.
+
+2. **Decoding Resources**: Next, it pulls out and converts all the resources from the APK, such as pictures and XML layouts, found in the `res` folder.
+
+3. **Decoding Value XMLs**: It also decodes files in the `values` folder that contain text strings, sizes, and style settings into a format that's easy to read.
+
+4. **Manifest Decoding**: The tool extracts and decodes the `AndroidManifest.xml`, which is important because it includes details about the app's setup, permissions, and components like activities and services.
+
+5. **Decoding `.dex` Files**: `apktool` also works on `.dex` files, turning them into a more understandable format called `smali`. This is like a middle-step version of the app's original code. If the app has multiple `.dex` files, it means it's using a method to support more code than usual.
+
+6. **Copying Assets and Libs**: The tool copies other materials like raw assets and native libraries that are part of the APK.
+
+7. **Handling Unknown and Original Files**: Finally, `apktool` keeps any files it doesn’t directly process, like custom files specific to the app, unchanged.
+
+## `Test Documentation`
 
 ### 1. `MainActivityTest`
 
