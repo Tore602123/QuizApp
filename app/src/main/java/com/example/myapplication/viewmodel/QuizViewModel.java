@@ -3,13 +3,11 @@ package com.example.myapplication.viewmodel;
 import android.app.Application;
 
 import androidx.annotation.NonNull;
-import androidx.lifecycle.AndroidViewModel;
-import androidx.lifecycle.LiveData;
+
+import com.example.myapplication.model.Image;
 
 import java.util.List;
 import java.util.Stack;
-import com.example.myapplication.model.Image;
-import com.example.myapplication.database.ImageRepository;
 
 public class QuizViewModel extends BaseViewModel{
     private List<Image> currentImages;

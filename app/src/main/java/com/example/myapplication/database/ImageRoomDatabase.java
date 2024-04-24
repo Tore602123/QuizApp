@@ -16,7 +16,7 @@ public abstract class ImageRoomDatabase extends RoomDatabase {
 
     public abstract ImageDAO imageDAO();
     private static ImageRoomDatabase INSTANCE;
-    private static int NUMBER_OF_THREADS = 4;
+    private static final int NUMBER_OF_THREADS = 4;
 
     static final ExecutorService databaseWriteExecutor =
             Executors.newFixedThreadPool(NUMBER_OF_THREADS);

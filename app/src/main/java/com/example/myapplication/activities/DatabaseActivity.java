@@ -1,30 +1,27 @@
 package com.example.myapplication.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.ViewModelProvider;
-import androidx.recyclerview.widget.LinearLayoutManager;
-
 import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
+
 import com.example.myapplication.R;
 import com.example.myapplication.database.ImageRepository;
 import com.example.myapplication.databinding.ActivityDatabaseBinding;
 import com.example.myapplication.model.Image;
-import com.example.myapplication.model.ImageData;
 import com.example.myapplication.util.DatabaseUtil;
 import com.example.myapplication.util.Util;
 import com.example.myapplication.view.ImageAdapter;
 import com.example.myapplication.viewmodel.DatabaseViewModel;
-import com.example.myapplication.viewmodel.MainViewModel;
 
 import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
 
 
 /**

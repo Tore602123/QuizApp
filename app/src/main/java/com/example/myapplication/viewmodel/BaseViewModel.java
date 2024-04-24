@@ -14,8 +14,8 @@ import java.util.List;
 import java.util.concurrent.Future;
 
 public class BaseViewModel extends AndroidViewModel {
-    private ImageRepository repository;
-    private LiveData<List<Image>> allImages;
+    private final ImageRepository repository;
+    private final LiveData<List<Image>> allImages;
 
 
     public BaseViewModel(@NonNull Application application) {

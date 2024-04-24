@@ -1,7 +1,6 @@
 package com.example.myapplication.model;
 
 
-import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -9,13 +8,11 @@ import androidx.room.PrimaryKey;
 public class Image implements Comparable<Image> {
 
     @PrimaryKey(autoGenerate = true)
-    @NonNull
     private int id;
     private String name;
     private String path;
 
     public Image(String name, String path) {
-        this.id = id;
         this.name = name;
         this.path = path;
     }

@@ -19,7 +19,6 @@ import android.net.Uri;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.espresso.intent.Intents;
-import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.platform.app.InstrumentationRegistry;
 
 import com.example.myapplication.activities.DatabaseActivity;
@@ -28,7 +27,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.junit.runners.MethodSorters;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -56,9 +54,7 @@ public class DatabaseActivityTest {
     public void testAddImage() {
         // Capture the initial number of images in the database.
         AtomicInteger atomicBefore = new AtomicInteger(-1);
-        activityScenario.onActivity(activity -> {
-            activity.getAllImages().observe(activity, images -> atomicBefore.set(images.size()));
-        });
+        activityScenario.onActivity(activity -> activity.getAllImages().observe(activity, images -> atomicBefore.set(images.size())));
         int before = atomicBefore.get();
 
         // Simulate button click to add an image.
@@ -79,9 +75,7 @@ public class DatabaseActivityTest {
 
         // Capture the number of images after adding one.
         AtomicInteger atomicAfter = new AtomicInteger(-1);
-        activityScenario.onActivity(activity -> {
-            activity.getAllImages().observe(activity, images -> atomicAfter.set(images.size()));
-        });
+        activityScenario.onActivity(activity -> activity.getAllImages().observe(activity, images -> atomicAfter.set(images.size())));
         int after = atomicAfter.get();
 
         // Verify the image count increased by one.
@@ -95,9 +89,7 @@ public class DatabaseActivityTest {
     public void testDeleteImage() {
         // Capture the initial number of images in the database.
         AtomicInteger atomicBefore = new AtomicInteger(-1);
-        activityScenario.onActivity(activity -> {
-            activity.getAllImages().observe(activity, images -> atomicBefore.set(images.size()));
-        });
+        activityScenario.onActivity(activity -> activity.getAllImages().observe(activity, images -> atomicBefore.set(images.size())));
         int before = atomicBefore.get();
 
         // Perform deletion of the test image added previously.
@@ -106,9 +98,7 @@ public class DatabaseActivityTest {
 
         // Capture the number of images after deletion.
         AtomicInteger atomicAfter = new AtomicInteger(-1);
-        activityScenario.onActivity(activity -> {
-            activity.getAllImages().observe(activity, images -> atomicAfter.set(images.size()));
-        });
+        activityScenario.onActivity(activity -> activity.getAllImages().observe(activity, images -> atomicAfter.set(images.size())));
         int after = atomicAfter.get();
 
         // Verify the image count decreased by one.

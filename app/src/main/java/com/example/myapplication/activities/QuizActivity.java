@@ -1,9 +1,5 @@
 package com.example.myapplication.activities;
 
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.ViewModelProvider;
-
 import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,18 +8,19 @@ import android.os.Looper;
 import android.view.View;
 import android.widget.Toast;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.myapplication.databinding.ActivityQuizBinding;
+import com.example.myapplication.model.Image;
+import com.example.myapplication.util.DatabaseUtil;
+import com.example.myapplication.viewmodel.QuizViewModel;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
 import java.util.Random;
 import java.util.Stack;
-
-
-import com.example.myapplication.databinding.ActivityQuizBinding;
-import com.example.myapplication.util.DatabaseUtil;
-import com.example.myapplication.model.Image;
-import com.example.myapplication.viewmodel.QuizViewModel;
 
 
 

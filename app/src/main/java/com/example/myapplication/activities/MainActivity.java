@@ -1,25 +1,17 @@
 package com.example.myapplication.activities;
 
 import android.os.Bundle;
-
-import androidx.appcompat.app.AppCompatActivity;
-
-import androidx.lifecycle.ViewModelProvider;
-
-
-import com.example.myapplication.R;
-
-import com.example.myapplication.databinding.ActivityMainBinding;
-import com.example.myapplication.model.ImageData;
-import com.example.myapplication.util.DatabaseUtil;
-import com.example.myapplication.util.Util;
-import com.example.myapplication.viewmodel.MainViewModel;
-
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
-import java.util.Objects;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.lifecycle.ViewModelProvider;
+
+import com.example.myapplication.R;
+import com.example.myapplication.databinding.ActivityMainBinding;
+import com.example.myapplication.util.DatabaseUtil;
+import com.example.myapplication.util.Util;
+import com.example.myapplication.viewmodel.MainViewModel;
 
 
 /**
